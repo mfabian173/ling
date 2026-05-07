@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLA Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e17;
+    --surface: #1a1829;
+    --surface2: #221f35;
+    --surface3: #2d2945;
+    --accent: #ff6b6b;
+    --accent2: #ffd166;
+    --accent3: #06d6a0;
+    --accent4: #74b9ff;
+    --text: #fffffe;
+    --text-muted: #a7a3c0;
+    --border: rgba(255,255,255,0.08);
+    --glow: rgba(255,107,107,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+ 
+  /* ANIMATED BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 20%, rgba(116,185,255,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,107,107,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(6,214,160,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+ 
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+    background: rgba(15,14,23,0.8);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--accent); }
+  .progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .progress-bar {
+    width: 120px;
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent4));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+ 
+  /* NAV */
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 4px;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15,14,23,0.6);
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .nav-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+ 
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 5;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+ 
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+  .section-title span { color: var(--accent); }
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 32px;
+  }
+ 
+  /* MODES */
+  .mode { display: none; }
+  .mode.active { display: block; }
+ 
+  /* ── HOME ── */
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .home-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .home-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); }
+  .home-card:hover::before { opacity: 1; }
+  .card-icon { font-size: 2rem; margin-bottom: 12px; }
+  .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+  .card-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+  .card-badge {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.65rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+  }
+ 
+  /* ── FLASHCARDS ── */
+  .chapter-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .filter-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--accent4);
+    color: var(--bg);
+    border-color: var(--accent4);
+  }
+  .card-arena {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .flashcard-wrap {
+    width: 100%;
+    max-width: 600px;
+    perspective: 1200px;
+    cursor: pointer;
+  }
+  .flashcard-inner {
+    width: 100%;
+    min-height: 260px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .flashcard-inner.flipped { transform: rotateY(180deg); }
+  .fc-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 32px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .fc-front {
+    background: linear-gradient(135deg, var(--surface), var(--surface2));
+    min-height: 260px;
+  }
+  .fc-back {
+    background: linear-gradient(135deg, var(--surface2), var(--surface3));
+    transform: rotateY(180deg);
+    min-height: 260px;
+  }
+  .fc-label {
+    font-size: 0.65rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .fc-term {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .fc-abbr {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent2);
+    margin-top: 8px;
+  }
+  .fc-def {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .fc-chapter {
+    margin-top: 16px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'Syne', sans-serif;
+  }
+  .fc-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+  .card-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); background: var(--surface3); }
+  .btn-green { background: var(--accent3); color: var(--bg); }
+  .btn-green:hover { filter: brightness(1.1); }
+  .btn-red { background: var(--accent); color: white; }
+  .btn-red:hover { filter: brightness(1.1); }
+  .btn-primary { background: var(--accent4); color: var(--bg); }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .fc-counter {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+ 
+  /* ── QUIZ ── */
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .quiz-question {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+  .quiz-term {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--accent2);
+    margin-bottom: 20px;
+  }
+  .quiz-options {
+    display: grid;
+    gap: 10px;
+  }
+  .quiz-opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent4); background: var(--surface3); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(6,214,160,0.12); }
+  .quiz-opt.wrong { border-color: var(--accent); background: rgba(255,107,107,0.12); }
+  .quiz-opt:disabled { cursor: default; }
+  .quiz-feedback {
+    margin-top: 20px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 0.87rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(6,214,160,0.1); border: 1px solid rgba(6,214,160,0.3); color: var(--accent3); }
+  .quiz-feedback.bad { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: var(--accent); }
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .quiz-score {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--accent3);
+  }
+ 
+  /* ── MATCHING ── */
+  .matching-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .match-col-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .match-item {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    transition: all 0.2s;
+    text-align: center;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .match-item.term { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent4); }
+  .match-item.def { font-family: 'Lora', serif; font-style: italic; font-size: 0.8rem; color: var(--text-muted); }
+  .match-item:hover:not(.matched):not(.selected) { border-color: rgba(255,255,255,0.3); }
+  .match-item.selected { border-color: var(--accent2); background: rgba(255,209,102,0.1); }
+  .match-item.matched { border-color: var(--accent3); background: rgba(6,214,160,0.08); opacity: 0.6; cursor: default; }
+  .match-item.wrong { border-color: var(--accent); background: rgba(255,107,107,0.1); animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .match-controls { display: flex; gap: 12px; margin-top: 24px; justify-content: center; }
+  .match-score-display {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .match-score-display strong { color: var(--accent3); }
+ 
+  /* ── FILL IN THE BLANK ── */
+  .fitb-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .fitb-sentence {
+    font-family: 'Lora', serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .fitb-blank {
+    display: inline-block;
+    min-width: 180px;
+    border-bottom: 2px solid var(--accent2);
+    padding: 0 8px;
+    color: var(--accent2);
+    font-weight: bold;
+  }
+  .fitb-input-wrap { display: flex; gap: 12px; flex-wrap: wrap; }
+  .fitb-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .fitb-input:focus { border-color: var(--accent4); }
+  .fitb-input.correct { border-color: var(--accent3); }
+  .fitb-input.wrong { border-color: var(--accent); }
+  .fitb-hint {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: none;
+  }
+  .fitb-hint.show { display: block; }
+ 
+  /* ── CONCEPT MAP ── */
+  .cmap-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .cluster-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cluster-btn.active { color: var(--bg); }
+  .cmap-canvas {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    min-height: 420px;
+    overflow-y: auto;
+  }
+  .cluster-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .concept-node {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .node-bullet {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .node-content { flex: 1; }
+  .node-term {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  .node-def {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+  .node-related {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .related-tag {
+    font-size: 0.65rem;
+    font-family: 'DM Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-muted);
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .related-tag:hover { color: var(--text); background: var(--surface3); }
+ 
+  /* ── AI TUTOR ── */
+  .chat-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  .chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ai-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 8px var(--accent3);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .chat-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+  .chat-sub { font-size: 0.72rem; color: var(--text-muted); }
+  .chat-msgs {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface3) transparent;
+  }
+  .msg {
+    display: flex;
+    gap: 12px;
+    animation: fadeIn 0.3s ease;
+  }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+  }
+  .msg.ai .msg-avatar { background: var(--accent3); color: var(--bg); }
+  .msg.user .msg-avatar { background: var(--accent4); color: var(--bg); }
+  .msg-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .msg.ai .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px 14px 14px 14px;
+    font-family: 'Lora', serif;
+  }
+  .msg.user .msg-bubble {
+    background: var(--accent4);
+    color: var(--bg);
+    border-radius: 14px 4px 14px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+  }
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    resize: none;
+    height: 44px;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: var(--accent4); }
+  .chat-send {
+    background: var(--accent3);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .chat-send:hover { filter: brightness(1.1); }
+  .chat-send:disabled { opacity: 0.4; cursor: default; }
+  .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .typing-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: bounce 1s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+  .chat-suggestions {
+    padding: 8px 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+  }
+  .suggest-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .suggest-chip:hover { color: var(--text); border-color: rgba(255,255,255,0.3); background: var(--surface2); }
+ 
+  /* ── SPEED ROUND ── */
+  .speed-arena {
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .speed-timer {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--accent2);
+    margin-bottom: 8px;
+    transition: color 0.3s;
+  }
+  .speed-timer.danger { color: var(--accent); animation: flash 0.5s infinite; }
+  @keyframes flash { 50%{opacity:0.5} }
+  .speed-progress {
+    height: 6px;
+    background: var(--surface3);
+    border-radius: 4px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .speed-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.1s linear;
+  }
+  .speed-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    margin-bottom: 20px;
+  }
+  .speed-prompt { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 12px; letter-spacing: 0.08em; font-family: 'Syne', sans-serif; text-transform: uppercase; }
+  .speed-term { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; letter-spacing: -0.02em; margin-bottom: 20px; }
+  .speed-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .speed-opt {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--text);
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .speed-opt:hover:not(:disabled) { border-color: var(--accent4); background: var(--surface3); transform: scale(1.02); }
+  .speed-opt.correct { border-color: var(--accent3); background: rgba(6,214,160,0.15); }
+  .speed-opt.wrong { border-color: var(--accent); background: rgba(255,107,107,0.15); }
+  .speed-scoreboard {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 16px;
+    font-family: 'Syne', sans-serif;
+  }
+  .score-item { text-align: center; }
+  .score-num { font-size: 2rem; font-weight: 800; }
+  .score-label { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+ 
+  /* RESULT SCREEN */
+  .result-screen {
+    text-align: center;
+    padding: 40px 20px;
+    display: none;
+  }
+  .result-screen.show { display: block; }
+  .result-emoji { font-size: 4rem; margin-bottom: 16px; }
+  .result-score {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 3rem;
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+  }
+  .result-msg { color: var(--text-muted); margin-bottom: 28px; font-size: 0.9rem; }
+ 
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+ 
+  /* UTILITIES */
+  .hidden { display: none !important; }
+  .mt-16 { margin-top: 16px; }
+  .text-center { text-align: center; }
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,209,102,0.1);
+    border: 1px solid rgba(255,209,102,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--accent2);
+    margin-left: auto;
+  }
+ 
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    header, nav { padding: 16px; }
+    main { padding: 20px 16px; }
+    .matching-grid { grid-template-columns: 1fr; }
+    .speed-options { grid-template-columns: 1fr; }
+    .fc-term { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+ 
+<header>
+  <div class="logo">SLA<span>.</span>hub</div>
+  <div class="progress-bar-wrap">
+    <span id="masteredCount">0 mastered</span>
+    <div class="progress-bar"><div class="progress-bar-fill" id="masterProgress"></div></div>
+    <span id="streakBadge" class="streak-badge hidden">🔥 <span id="streakNum">0</span></span>
+  </div>
+</header>
+ 
+<nav>
+  <button class="nav-btn active" onclick="showMode('home')">🏠 Home</button>
+  <button class="nav-btn" onclick="showMode('flashcards')">🃏 Flashcards</button>
+  <button class="nav-btn" onclick="showMode('quiz')">❓ Quiz</button>
+  <button class="nav-btn" onclick="showMode('matching')">🔗 Matching</button>
+  <button class="nav-btn" onclick="showMode('fitb')">✏️ Fill-in-Blank</button>
+  <button class="nav-btn" onclick="showMode('cmap')">🗺 Concept Map</button>
+  <button class="nav-btn" onclick="showMode('speed')">⚡ Speed Round</button>
+  <button class="nav-btn" onclick="showMode('tutor')">🤖 AI Tutor</button>
+</nav>
+ 
+<main>
+ 
+<!-- ══════════ HOME ══════════ -->
+<div class="mode active" id="mode-home">
+  <div class="section-title">Ready to <span>ace</span> your final?</div>
+  <div class="section-sub">Second Language Acquisition — Hummel 2e · Chapters 2–10 + Full Glossary</div>
+  <div class="home-grid">
+    <div class="home-card" onclick="showMode('flashcards')" style="border-color:rgba(116,185,255,0.3)">
+      <div class="card-icon">🃏</div>
+      <div class="card-title">Flashcards</div>
+      <div class="card-desc">Flip through terms with spaced-repetition style review. Mark what you know.</div>
+      <div class="card-badge" style="background:rgba(116,185,255,0.15);color:var(--accent4)">120+ terms</div>
+    </div>
+    <div class="home-card" onclick="showMode('quiz')" style="border-color:rgba(255,209,102,0.3)">
+      <div class="card-icon">❓</div>
+      <div class="card-title">Multiple Choice Quiz</div>
+      <div class="card-desc">Test your knowledge with 4-option questions drawn from all chapters.</div>
+      <div class="card-badge" style="background:rgba(255,209,102,0.15);color:var(--accent2)">adaptive difficulty</div>
+    </div>
+    <div class="home-card" onclick="showMode('matching')" style="border-color:rgba(6,214,160,0.3)">
+      <div class="card-icon">🔗</div>
+      <div class="card-title">Term Matching</div>
+      <div class="card-desc">Connect terms to their definitions in a timed puzzle. Great for fast recall.</div>
+      <div class="card-badge" style="background:rgba(6,214,160,0.15);color:var(--accent3)">memory game</div>
+    </div>
+    <div class="home-card" onclick="showMode('fitb')" style="border-color:rgba(255,107,107,0.3)">
+      <div class="card-icon">✏️</div>
+      <div class="card-title">Fill in the Blank</div>
+      <div class="card-desc">Complete definitions and sentences using exact vocabulary from your materials.</div>
+      <div class="card-badge" style="background:rgba(255,107,107,0.15);color:var(--accent)">recall mode</div>
+    </div>
+    <div class="home-card" onclick="showMode('cmap')" style="border-color:rgba(255,209,102,0.3)">
+      <div class="card-icon">🗺</div>
+      <div class="card-title">Concept Map</div>
+      <div class="card-desc">Explore how theories, hypotheses, and concepts connect within chapters.</div>
+      <div class="card-badge" style="background:rgba(255,209,102,0.15);color:var(--accent2)">big picture</div>
+    </div>
+    <div class="home-card" onclick="showMode('speed')" style="border-color:rgba(255,107,107,0.3)">
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Speed Round</div>
+      <div class="card-desc">Race against the clock — 30 seconds per question, rapid-fire mode.</div>
+      <div class="card-badge" style="background:rgba(255,107,107,0.15);color:var(--accent)">timed challenge</div>
+    </div>
+    <div class="home-card" onclick="showMode('tutor')" style="border-color:rgba(6,214,160,0.3)">
+      <div class="card-icon">🤖</div>
+      <div class="card-title">AI Tutor</div>
+      <div class="card-desc">Ask anything about SLA theories, hypotheses, or teaching methods. Get instant explanations.</div>
+      <div class="card-badge" style="background:rgba(6,214,160,0.15);color:var(--accent3)">powered by Claude</div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════ FLASHCARDS ══════════ -->
+<div class="mode" id="mode-flashcards">
+  <div class="section-title">Flash<span>cards</span></div>
+  <div class="section-sub">Click card to reveal · Mark known/unknown to track progress</div>
+  <div class="chapter-filter" id="fc-chapter-filter"></div>
+  <div class="card-arena">
+    <div class="flashcard-wrap" onclick="flipCard()">
+      <div class="flashcard-inner" id="flashcard-inner">
+        <div class="fc-face fc-front">
+          <div class="fc-label">Term</div>
+          <div class="fc-term" id="fc-term-text">Loading...</div>
+          <div class="fc-abbr" id="fc-abbr-text"></div>
+          <div class="fc-chapter" id="fc-chapter-text"></div>
+          <br>
+          <div class="fc-hint">↓ tap to reveal definition</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-label">Definition</div>
+          <div class="fc-def" id="fc-def-text"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-counter" id="fc-counter">Card 1 of 1</div>
+    <div class="card-controls">
+      <button class="btn btn-ghost" onclick="prevCard()">← Prev</button>
+      <button class="btn btn-red" onclick="markCard(false)">✗ Still learning</button>
+      <button class="btn btn-green" onclick="markCard(true)">✓ Got it!</button>
+      <button class="btn btn-ghost" onclick="nextCard()">Next →</button>
+    </div>
+    <button class="btn btn-ghost" onclick="shuffleCards()" style="margin-top:8px">🔀 Shuffle</button>
+  </div>
+</div>
+ 
+<!-- ══════════ QUIZ ══════════ -->
+<div class="mode" id="mode-quiz">
+  <div class="section-title">Multiple <span>Choice</span></div>
+  <div class="section-sub">4 options — one correct · Instant feedback after each answer</div>
+  <div class="quiz-meta">
+    <span id="quiz-progress">Question 1</span>
+    <span class="quiz-score" id="quiz-score-display">Score: 0/0</span>
+  </div>
+  <div class="quiz-card" id="quiz-card-el">
+    <div class="quiz-question" id="quiz-q-text">Loading...</div>
+    <div class="quiz-options" id="quiz-opts"></div>
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary hidden" id="quiz-next-btn" onclick="nextQuizQuestion()">Next →</button>
+      <button class="btn btn-ghost" onclick="initQuiz()">↺ New Quiz</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════ MATCHING ══════════ -->
+<div class="mode" id="mode-matching">
+  <div class="section-title">Term <span>Matching</span></div>
+  <div class="section-sub">Select a term, then its definition · Match all pairs to win</div>
+  <div class="match-score-display">Matched: <strong id="match-score">0</strong> / <span id="match-total">0</span></div>
+  <div style="display:flex;gap:12px;margin-bottom:16px">
+    <div style="flex:1;text-align:center" class="match-col-title">Terms</div>
+    <div style="flex:1;text-align:center" class="match-col-title">Definitions</div>
+  </div>
+  <div class="matching-grid" id="matching-grid"></div>
+  <div class="match-controls">
+    <button class="btn btn-primary" onclick="initMatching()">↺ New Round</button>
+  </div>
+</div>
+ 
+<!-- ══════════ FILL IN BLANK ══════════ -->
+<div class="mode" id="mode-fitb">
+  <div class="section-title">Fill in <span>the Blank</span></div>
+  <div class="section-sub">Type the missing term · Partial matches accepted</div>
+  <div class="fitb-card">
+    <div class="quiz-meta">
+      <span id="fitb-progress">1 of 20</span>
+      <span class="quiz-score" id="fitb-score">0 correct</span>
+    </div>
+    <div class="fitb-sentence" id="fitb-sentence">Loading...</div>
+    <div class="fitb-input-wrap">
+      <input class="fitb-input" id="fitb-input" placeholder="Type the term..." autocomplete="off" onkeydown="if(event.key==='Enter')checkFitb()">
+      <button class="btn btn-primary" onclick="checkFitb()">Check</button>
+    </div>
+    <div class="fitb-hint" id="fitb-hint"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn btn-ghost hidden" id="fitb-next-btn" onclick="nextFitb()">Next →</button>
+      <button class="btn btn-ghost" onclick="initFitb()">↺ Restart</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════ CONCEPT MAP ══════════ -->
+<div class="mode" id="mode-cmap">
+  <div class="section-title">Concept <span>Map</span></div>
+  <div class="section-sub">Explore terms grouped by chapter theme · Click related tags to jump</div>
+  <div class="cmap-controls" id="cmap-controls"></div>
+  <div class="cmap-canvas" id="cmap-canvas"></div>
+</div>
+ 
+<!-- ══════════ SPEED ROUND ══════════ -->
+<div class="mode" id="mode-speed">
+  <div class="section-title">Speed <span>Round</span></div>
+  <div class="section-sub">30 seconds per question · How many can you get right?</div>
+  <div class="speed-arena">
+    <div id="speed-start-screen">
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--text-muted);margin-bottom:24px">Test your SLA knowledge under pressure!</div>
+      <button class="btn btn-primary" onclick="startSpeed()" style="font-size:1rem;padding:16px 40px">Start Speed Round ⚡</button>
+    </div>
+    <div id="speed-game-screen" class="hidden">
+      <div class="speed-timer" id="speed-timer">30</div>
+      <div class="speed-progress"><div class="speed-progress-fill" id="speed-progress"></div></div>
+      <div class="speed-card">
+        <div class="speed-prompt" id="speed-prompt">What does this term mean?</div>
+        <div class="speed-term" id="speed-term">Loading...</div>
+        <div class="speed-options" id="speed-opts"></div>
+      </div>
+      <div class="speed-scoreboard">
+        <div class="score-item"><div class="score-num" id="speed-correct" style="color:var(--accent3)">0</div><div class="score-label">Correct</div></div>
+        <div class="score-item"><div class="score-num" id="speed-wrong" style="color:var(--accent)">0</div><div class="score-label">Wrong</div></div>
+        <div class="score-item"><div class="score-num" id="speed-total">0</div><div class="score-label">Total</div></div>
+      </div>
+    </div>
+    <div class="result-screen" id="speed-result">
+      <div class="result-emoji" id="speed-emoji">🎉</div>
+      <div class="result-score" id="speed-result-score"></div>
+      <div class="result-msg" id="speed-result-msg"></div>
+      <button class="btn btn-primary" onclick="startSpeed()">Play Again ⚡</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════ AI TUTOR ══════════ -->
+<div class="mode" id="mode-tutor">
+  <div class="section-title">AI <span>Tutor</span></div>
+  <div class="section-sub">Ask anything about SLA, linguistic teaching methods, hypotheses, or theories</div>
+  <div class="chat-wrap">
+    <div class="chat-header">
+      <div class="ai-dot"></div>
+      <div>
+        <div class="chat-title">SLA Study Assistant</div>
+        <div class="chat-sub">Powered by Claude · Knows your full course material</div>
+      </div>
+    </div>
+    <div class="chat-suggestions" id="chat-suggestions">
+      <button class="suggest-chip" onclick="sendSuggestion(this)">Explain Krashen's Monitor Model</button>
+      <button class="suggest-chip" onclick="sendSuggestion(this)">What's the difference between BICS and CALP?</button>
+      <button class="suggest-chip" onclick="sendSuggestion(this)">Compare CLT vs Grammar Translation Method</button>
+      <button class="suggest-chip" onclick="sendSuggestion(this)">What is the Critical Period Hypothesis?</button>
+      <button class="suggest-chip" onclick="sendSuggestion(this)">Explain Zone of Proximal Development in SLA</button>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="msg ai">
+        <div class="msg-avatar">AI</div>
+        <div class="msg-bubble">Hi! I'm your SLA study assistant. I know everything from your course — Krashen's Monitor Model, the Critical Period Hypothesis, teaching methods like CLT and TPR, sociocultural theory, bilingualism, and more. What would you like to explore?</div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask about any SLA concept..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="chat-send" id="chat-send" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+ 
+</main>
+ 
+<script>
+// ══════════════════════════════════════════════
+// DATA — All terms from slides + glossary
+// ══════════════════════════════════════════════
+const TERMS = [
+  // Ch 2 - First Language Acquisition
+  {term:"behaviorism", abbr:"", def:"Theoretical view proposing that learning principles can explain most behavior, and that observable events, rather than mental activity, are the proper objects of study.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"child-directed speech", abbr:"CDS", def:"Special speech register used by adults and older children when speaking to younger children and infants; characterized by exaggerated intonation and considerable repetition.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"CHILDES", abbr:"Child Language Data Exchange System", def:"Online corpus that has grown to include numerous transcripts of dialogues between children and adults and older children.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"connectionism", abbr:"", def:"Theoretical view proposing that language is learned through exposure to input allowing the construction of associations among units — sound sequences, words, sentence patterns, etc.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"emergentism", abbr:"", def:"Theoretical view that phenomena of language are best explained by reference to more basic non-linguistic factors and their interaction (physiology, perception, processing, input properties, etc.).", chapter:"Ch.2 · FLA Foundations"},
+  {term:"empiricism", abbr:"", def:"Theoretical view that emphasizes the role of the environment and experience over that of innate ideas or capacities.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"formulaic sequences", abbr:"", def:"Phrases that learners learn and use as a whole unit, without analyzing into individual units (e.g., 'How are you?' used as a single unit).", chapter:"Ch.2 · FLA Foundations"},
+  {term:"high amplitude sucking", abbr:"HAS", def:"A technique used to study infant perceptual abilities; typically involves recording an infant's sucking rate as a measure of its attention to various stimuli.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"input", abbr:"", def:"The language to which an individual is exposed in the environment.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"interactionism", abbr:"", def:"Theoretical viewpoint that recognizes the role of experience and the environment, as well as the contribution of innate capacities in first language acquisition.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"interference", abbr:"", def:"The influence of L1 in the L2 when it leads to an error, or vice versa.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"metalinguistic awareness", abbr:"", def:"Ability to reflect on language as an object.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"mean length of utterance", abbr:"MLU", def:"Measurement used to calculate the development of children's grammar; calculated as the number of morphemes divided by total number of utterances.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"morpheme", abbr:"", def:"Smallest meaning-bearing unit of language (e.g., word units like 'dog' and grammatical inflections like the plural '-s').", chapter:"Ch.2 · FLA Foundations"},
+  {term:"nativism", abbr:"", def:"A theoretical approach emphasizing the innate, possibly genetic, contributions to any behavior.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"nonreduplicated babbling", abbr:"variegated babbling", def:"Babbling in which young children vary the consonant-vowel sequences used; for example, 'ba-da-ga.'", chapter:"Ch.2 · FLA Foundations"},
+  {term:"object permanence", abbr:"", def:"The understanding that an infant gains during the latter part of the first year that objects continue to exist even though they may no longer be visible.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"overextension", abbr:"", def:"A child's use of a word for objects or items that share a feature or property; for example, using 'dog' to refer to all animals with four legs.", chapter:"Ch.2 · FLA Foundations"},
+  {term:"overgeneralization", abbr:"", def:"The use of a rule or structure in contexts in which it is not appropriate; for example, when a child says 'I hurted my arm.'", chapter:"Ch.2 · FLA Foundations"},
+  {term:"reduplicated babbling", abbr:"", def:"Babbling in which consonant-vowel combinations are repeated, such as 'ba-ba-ba.'", chapter:"Ch.2 · FLA Foundations"},
+  {term:"underextension", abbr:"", def:"A child's use of a word with a narrower meaning than in the adult's language; for example, 'dog' to refer only to the family's pet, but not to other dogs.", chapter:"Ch.2 · FLA Foundations"},
+  // Ch 3 - Bilingualism
+  {term:"additive bilingualism", abbr:"", def:"Language learning situation in which learning a second language is not at the expense of development of the L1; both languages are supported and valued.", chapter:"Ch.3 · Bilingualism"},
+  {term:"subtractive bilingualism", abbr:"", def:"Language learning situation in which the majority language is learned at the expense of the native language of minority language speakers.", chapter:"Ch.3 · Bilingualism"},
+  {term:"bilingual education", abbr:"", def:"Schooling in two languages; in the US specifically refers to programs for minority language children using both L1 and majority language for instruction.", chapter:"Ch.3 · Bilingualism"},
+  {term:"dual-language instruction", abbr:"", def:"Language education in which children who are native speakers from each of the target language communities, both majority and minority language speakers, share the classroom.", chapter:"Ch.3 · Bilingualism"},
+  {term:"heritage language", abbr:"", def:"A language acquired by individuals raised in homes where a dominant language in the larger society, such as English in the US, is not spoken or not exclusively spoken.", chapter:"Ch.3 · Bilingualism"},
+  {term:"immersion education", abbr:"", def:"A form of bilingual education in which students are taught through the medium of a second language, along with some instruction through their L1.", chapter:"Ch.3 · Bilingualism"},
+  // Ch 4 - Theoretical Perspectives
+  {term:"Monitor Model", abbr:"", def:"Krashen's model of SLA based on the concept that learners have two systems (acquisition and learning) and that the learned system acts as a monitor (editor) on the acquired system.", chapter:"Ch.4 · SLA Theories"},
+  {term:"Acquisition-Learning Hypothesis", abbr:"", def:"Krashen's proposal that only 'acquisition' — subconsciously acquired knowledge — leads to productive output; 'learning,' the learner's conscious knowledge of rules, only serves as a monitor.", chapter:"Ch.4 · SLA Theories"},
+  {term:"Affective Filter Hypothesis", abbr:"", def:"A hypothesis of the Monitor Model suggesting an affective filter can block access to language acquisition under certain conditions, such as when the learner is stressed or anxious.", chapter:"Ch.4 · SLA Theories"},
+  {term:"Comprehensible Input Hypothesis", abbr:"i+1", def:"Monitor Model hypothesis stating that the most effective way to increase L2 competence is by exposure to 'comprehensible input' — language one level beyond the learner's current level.", chapter:"Ch.4 · SLA Theories"},
+  {term:"contrastive analysis", abbr:"CA", def:"The comparison of the linguistic structures of two or more languages to determine their similarities and differences; used in 1950s–60s as a tool for L2 teaching.", chapter:"Ch.4 · SLA Theories"},
+  {term:"Contrastive Analysis Hypothesis", abbr:"CAH", def:"Predicts that where there are similarities between L1 and L2, the learner will acquire L2 structures with ease; where there are differences, the learner will have difficulty.", chapter:"Ch.4 · SLA Theories"},
+  {term:"cross-linguistic influence", abbr:"CLI", def:"Refers to instances of phonological, lexical, grammatical, or other aspects of transfer from one language to another.", chapter:"Ch.4 · SLA Theories"},
+  {term:"developmental error", abbr:"", def:"An error in learner language which does not result from L1 transfer, but reflects the learner's gradual discovery of the L2 system.", chapter:"Ch.4 · SLA Theories"},
+  {term:"Error Analysis", abbr:"EA", def:"An approach to L2 acquisition research involving the description and classification of errors to gain insight into the learner's current underlying knowledge of the L2 system.", chapter:"Ch.4 · SLA Theories"},
+  {term:"interlanguage", abbr:"IL", def:"A term coined by Selinker (1972) for the language produced by a learner that differs in systematic ways from that of a native speaker.", chapter:"Ch.4 · SLA Theories"},
+  {term:"parameters", abbr:"", def:"In Universal Grammar, a small set of alternatives for a given grammatical feature — e.g., whether a preposition precedes or follows the noun (Prep N or N Prep).", chapter:"Ch.4 · SLA Theories"},
+  {term:"sociocultural theory", abbr:"SCT", def:"Applied to SLA, the view that social interaction is necessary for L2 development and learning needs to be examined in its social context.", chapter:"Ch.4 · SLA Theories"},
+  {term:"scaffolding", abbr:"", def:"In a sociocultural approach, the role played by teachers, peers, and others in supporting the learner's development to reach a more advanced stage.", chapter:"Ch.4 · SLA Theories"},
+  {term:"zone of proximal development", abbr:"ZPD", def:"The distance between the actual developmental level as determined by individual linguistic production, and the level of potential development achieved collaboratively with a teacher or peer.", chapter:"Ch.4 · SLA Theories"},
+  // Ch 5 - Cognitive Approaches
+  {term:"automatic processing", abbr:"", def:"In an information-processing view, this occurs when a skill becomes practiced and can be carried out relatively rapidly and without conscious effort or short-term memory limitations.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"cognitive linguistics", abbr:"CL", def:"An approach viewing meaning as central to language; language is seen as inextricably linked to cognition.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"complex adaptive system", abbr:"CAS", def:"The view that language is acquired and develops through the combined influences of social interaction and cognitive processes.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"Comprehensible Output Hypothesis", abbr:"", def:"Swain (1985) proposed that having to produce the L2 encourages the learner to attend to the language and thereby leads to improved proficiency.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"controlled processing", abbr:"", def:"In an information-processing view, characterizes new skill learning; comparatively slow and effortful, and limited by short-term memory constraints.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"information-processing approach", abbr:"", def:"Stemming from cognitive psychology, this approach emphasizes that the mental processes used for interpreting experience are also involved in the acquisition and use of a second language.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"input processing", abbr:"IP", def:"Model proposed by VanPatten on how learners make form-meaning connections: learners have limited processing capacity so give priority to meaning over form.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"negotiation for meaning", abbr:"", def:"Process in which learners and competent speakers interact in various ways, making adjustments in their speech exchanges until understanding is achieved.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"negative feedback", abbr:"", def:"Drawing attention in some way to the L2 learner's incorrect utterances.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"Noticing Hypothesis", abbr:"", def:"Proposed by Schmidt (1995), it states that what learners notice in the input is what becomes intake for learning.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"procedural knowledge", abbr:"", def:"Knowledge of how to do something; underlies automatic performance.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"recasts", abbr:"", def:"Rephrasing an L2 learner's incorrect utterance correctly.", chapter:"Ch.5 · Cognitive Approaches"},
+  // Ch 6 - Teaching Methods
+  {term:"Audiolingual Method", abbr:"ALM", def:"Based on behaviorist principles, this method attempted to develop good language habits through repetitive drills and pattern practices.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"Communicative Language Teaching", abbr:"CLT", def:"An approach that emphasizes using techniques that engage learners in the pragmatic, authentic, functional use of language for meaningful purposes.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"computer-assisted language learning", abbr:"CALL", def:"Refers to using the computer and computerized resources in L2 learning.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"corrective feedback", abbr:"", def:"Providing feedback to the learner, explicitly or implicitly, that an utterance is not entirely correct.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"Direct Method", abbr:"", def:"An approach developed in reaction to the Grammar Translation Method that gave priority to oral expression and avoided recourse to the learner's native language.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"focus on form", abbr:"FFI", def:"Drawing students' attention to aspects of linguistic form in classrooms characterized by a meaning- or communication-based approach.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"focus on forms", abbr:"", def:"An emphasis on formal aspects of language in the classroom by isolating them for practice through exercises, rather than through meaningful activities.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"Grammar Translation Method", abbr:"", def:"A teaching method with an emphasis on grammar and translation of sentences.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"input enhancement", abbr:"", def:"Various means of drawing attention to aspects of the target language so that students will notice and learn them, such as underlining or using bold type.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"input flooding", abbr:"", def:"Exposing learners to substantial amounts of input, or examples of a given linguistic feature.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"postmethod perspective", abbr:"", def:"View that implementing any single method is misguided; teachers need to take their specific teaching context into account and take an active role in learning from practice.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"Processing Instruction", abbr:"PI", def:"An approach to L2 teaching based on Input Processing; it draws learners' attention to grammatical forms through structured input activities.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"Suggestopedia", abbr:"", def:"An L2 teaching approach developed by Georgi Lozanov that promoted a relaxed, stress-free environment for language learning in small groups.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"task-based language teaching", abbr:"TBLT", def:"An approach related to CLT that emphasizes concrete learning outcomes in the form of 'tasks' — what learners are able to do with the language.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"Total Physical Response", abbr:"TPR", def:"Teaching method developed by Asher which allows learners to wait until they are ready to speak, but asks them to carry out actions in response to the instructor's commands.", chapter:"Ch.6 · Teaching Methods"},
+  {term:"uptake", abbr:"", def:"Learner's utterance that follows and incorporates teacher or interlocutor feedback.", chapter:"Ch.6 · Teaching Methods"},
+  // Ch 7 - L2 Development
+  {term:"cognates", abbr:"", def:"Words in related languages that developed from the same ancestral root and therefore have the same or a similar form across languages (e.g., 'table' in English and French).", chapter:"Ch.7 · L2 Development"},
+  {term:"developmental sequences", abbr:"", def:"Fixed series of stages in language development (phonological, syntactic, semantic), such as the sequence for developing negation.", chapter:"Ch.7 · L2 Development"},
+  {term:"fossilization", abbr:"", def:"Aspects of the learner's interlanguage that appear to 'fossilize' or remain permanently fixed as non-native-like structures or sounds.", chapter:"Ch.7 · L2 Development"},
+  {term:"interlanguage pragmatics", abbr:"ILP", def:"The study of the effects of context and situation on meaning across languages.", chapter:"Ch.7 · L2 Development"},
+  {term:"language corpora", abbr:"", def:"Large sets of usually computerized language data, making it easier to discover frequencies or patterns.", chapter:"Ch.7 · L2 Development"},
+  {term:"markedness", abbr:"", def:"Notion that certain features are more natural, frequent, or basic across languages (unmarked), while others are less so (marked).", chapter:"Ch.7 · L2 Development"},
+  {term:"Markedness Differential Hypothesis", abbr:"MDH", def:"Proposes that if a given language contains a marked structure, it is likely to also contain the unmarked equivalent.", chapter:"Ch.7 · L2 Development"},
+  {term:"Multidimensional Model", abbr:"", def:"Model of L2 syntactic growth in which developmental features are acquired in a fixed order due to processing constraints, while variational features allow for individual differences.", chapter:"Ch.7 · L2 Development"},
+  {term:"pragmatics", abbr:"", def:"The study of how context and situation affect meaning.", chapter:"Ch.7 · L2 Development"},
+  {term:"Processability Theory", abbr:"", def:"Theory suggesting that the processing load required to carry out syntactic manipulations at various stages of the Multidimensional Model can explain the order of those stages.", chapter:"Ch.7 · L2 Development"},
+  {term:"Speech Learning Model", abbr:"SLM", def:"Predicts that L2 sounds similar to L1 sounds will be difficult to perceive/produce since learners already have L1 categories, while entirely new sounds will be easier.", chapter:"Ch.7 · L2 Development"},
+  {term:"Teachability Hypothesis", abbr:"", def:"Based on the Multidimensional Model and Processability Theory — one can only successfully teach what the L2 learner is cognitively ready to learn.", chapter:"Ch.7 · L2 Development"},
+  // Ch 8 - Age & Critical Period
+  {term:"age of arrival / age of onset", abbr:"AoA / AO", def:"The age when a learner is first substantially exposed to the target language.", chapter:"Ch.8 · Age & CPH"},
+  {term:"critical period", abbr:"", def:"The period of time during which certain behaviors or skills appear to be acquired with particular speed and ease, and without external intervention.", chapter:"Ch.8 · Age & CPH"},
+  {term:"Critical Period Hypothesis", abbr:"CPH", def:"The view that there is a critical period favoring language acquisition, after which native-speaker-like ability cannot be attained.", chapter:"Ch.8 · Age & CPH"},
+  {term:"feral child", abbr:"", def:"Term given to the rare cases of children who have grown up in situations deprived of regular human interaction and normal language exposure.", chapter:"Ch.8 · Age & CPH"},
+  {term:"imprinting", abbr:"", def:"Rapid learning occurring in a young animal in which it begins to pattern behavior on an adult model.", chapter:"Ch.8 · Age & CPH"},
+  {term:"lateralization", abbr:"", def:"Process by which cognitive functions (e.g., language) become localized to one or the other of the brain's hemispheres.", chapter:"Ch.8 · Age & CPH"},
+  {term:"sensitive period", abbr:"", def:"A weaker version of 'critical period' in which decline in language learning ability is more gradual without a categorical onset or endpoint.", chapter:"Ch.8 · Age & CPH"},
+  // Ch 9 - Individual Differences
+  {term:"aptitude", abbr:"", def:"Basic abilities that facilitate L2 learning; varies across individuals.", chapter:"Ch.9 · Individual Differences"},
+  {term:"Attitude/Motivation Test Battery", abbr:"AMTB", def:"A test for attitudes and motivation widely used and adapted for use in various L2 learning contexts; developed by Gardner (1985).", chapter:"Ch.9 · Individual Differences"},
+  {term:"basic interpersonal communicative skills", abbr:"BICS", def:"Skills useful in carrying out face-to-face personal communication, as in conversations.", chapter:"Ch.9 · Individual Differences"},
+  {term:"cognitive/academic language proficiency", abbr:"CALP", def:"Skills requiring abstract language abilities (analysis, synthesis, etc.) useful in carrying out academic-related tasks.", chapter:"Ch.9 · Individual Differences"},
+  {term:"cognitive style", abbr:"", def:"A predisposition to process information in a characteristic manner.", chapter:"Ch.9 · Individual Differences"},
+  {term:"extrinsic motivation", abbr:"", def:"Motivation in which there is anticipation of a reward (material or non-material) from outside the self.", chapter:"Ch.9 · Individual Differences"},
+  {term:"field dependence", abbr:"FD", def:"A type of cognitive style in which learners tend to perceive a field as a whole (holistic perception).", chapter:"Ch.9 · Individual Differences"},
+  {term:"field independence", abbr:"FI", def:"A type of cognitive style in which learners perceive a part distinct from its background.", chapter:"Ch.9 · Individual Differences"},
+  {term:"integrative orientation", abbr:"", def:"A desire to know more about and identify with the target language community.", chapter:"Ch.9 · Individual Differences"},
+  {term:"instrumental orientation", abbr:"", def:"When instrumental reasons (practical goals) primarily motivate the language study.", chapter:"Ch.9 · Individual Differences"},
+  {term:"intelligence", abbr:"", def:"A hypothesized general factor underlying the ability to adapt to the environment, often operationalized in terms of traditional IQ tests.", chapter:"Ch.9 · Individual Differences"},
+  {term:"intrinsic motivation", abbr:"", def:"Motivation that leads to internally rewarding consequences.", chapter:"Ch.9 · Individual Differences"},
+  {term:"learning strategies", abbr:"", def:"Specific actions, behaviors, or techniques students use — often consciously — to improve their progress in apprehending, internalizing, and using the L2.", chapter:"Ch.9 · Individual Differences"},
+  {term:"learning style", abbr:"", def:"A person's usual and preferred way of acquiring, processing, and remembering new information and skills.", chapter:"Ch.9 · Individual Differences"},
+  {term:"Modern Language Aptitude Test", abbr:"MLAT", def:"Test that measures aptitude components: phonetic coding ability, grammatical sensitivity, and rote memory through five different subtests.", chapter:"Ch.9 · Individual Differences"},
+  {term:"motivation", abbr:"", def:"Gardner (1985): Effort to learn a language + desire to achieve a goal + positive attitudes toward language learning.", chapter:"Ch.9 · Individual Differences"},
+  {term:"orientation", abbr:"", def:"The overall aim, purpose, direction, and/or goal of language learning.", chapter:"Ch.9 · Individual Differences"},
+  {term:"phonological short-term memory", abbr:"PSTM / PM", def:"Subsystem of working memory responsible for temporary maintenance of acoustic or speech-based information.", chapter:"Ch.9 · Individual Differences"},
+  {term:"working memory", abbr:"WM", def:"An active system for temporarily storing and manipulating information needed in the execution of complex cognitive tasks, such as comprehension of verbal material.", chapter:"Ch.9 · Individual Differences"},
+  // Ch 10 - Bilingual Cognition
+  {term:"bilingual first language acquisition", abbr:"BFLA", def:"Simultaneous acquisition of two languages from birth or shortly thereafter.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"bilingual lexical representation", abbr:"", def:"How words from two languages are mentally stored or organized.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"code-switching", abbr:"", def:"Using words or phrases from one language while speaking in the other language.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"executive control", abbr:"", def:"Processes or functions localized in the brain's frontal lobe, associated with attentional control, allowing one to focus on a task in the context of competing information.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"language presentation", abbr:"", def:"The way in which languages are used with a child, such as one language by one parent and another by the other parent.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"lexical access", abbr:"", def:"How words are accessed or recalled in the mental lexicon.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"mixed utterances", abbr:"", def:"Use of words or morphemes from both languages, often used to describe what is common in the young bilingual child.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"semantic priming", abbr:"", def:"When a semantically related word precedes a real word (e.g., 'nurse' before 'hospital'), individuals can make lexical decisions faster than with an unrelated preceding word.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"Stroop experiment", abbr:"", def:"Consists of showing color words printed in ink that does or does not match the color word itself; the participant names the ink color and ignores the color word.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"cognitive reserve", abbr:"", def:"The brain's ability to cope with and delay appearance of symptoms of degenerative brain changes associated with dementia or other brain diseases.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"declarative knowledge", abbr:"", def:"The knowledge that something is the case, as in knowing a grammatical rule.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"explicit knowledge", abbr:"", def:"In SLA, knowledge of the L2 (vocabulary, grammar rules, etc.) of which learners are explicitly aware.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"implicit knowledge", abbr:"", def:"In SLA, knowledge of the L2 that underlies the learner's performance, but of which they are not explicitly aware.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"intake", abbr:"", def:"The part of the input that the learner notices.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"Natural Order Hypothesis", abbr:"", def:"Krashen's Monitor Model hypothesis stipulating that language elements are acquired in an essentially fixed, predetermined order.", chapter:"Ch.4 · SLA Theories"},
+  {term:"skill acquisition theory", abbr:"", def:"View applied to SLA proposing that language learning is a skill that proceeds from explicit declarative knowledge to procedural knowledge, with practice leading to automatization.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"translanguaging", abbr:"", def:"Purposeful alternation of language mode of input and output in bilingual classrooms, validating all languages known by learners.", chapter:"Ch.3 · Bilingualism"},
+  {term:"Universal Grammar", abbr:"UG", def:"The innate principles and properties that characterize the grammars of all human languages; also the theoretical view associated with this concept.", chapter:"Ch.4 · SLA Theories"},
+  {term:"language mode", abbr:"", def:"The state of activation of the bilingual's or multilingual's languages.", chapter:"Ch.10 · Bilingual Cognition"},
+  {term:"perceptual salience", abbr:"", def:"The noticeability of a feature (e.g., if a given feature is given more emphasis in an utterance, it is more perceptually salient).", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"noticing", abbr:"", def:"Paying attention to language input with some awareness.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"length of residence", abbr:"LOR", def:"Important factor in studies on the role of age in L2 learning; refers to how long a language learner has resided in the target language community.", chapter:"Ch.8 · Age & CPH"},
+  {term:"interaction approach", abbr:"", def:"The approach that emerged from the Interaction Hypothesis, emphasizing the roles of input, interaction, and output in SLA.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"Interaction Hypothesis", abbr:"", def:"Proposed by Long (1983): interactional modification makes input comprehensible; comprehensible input promotes acquisition; therefore, interactional modification promotes acquisition.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"output", abbr:"", def:"The language produced by the learner.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"self-regulation", abbr:"", def:"The degree to which individuals actively participate in their own learning.", chapter:"Ch.5 · Cognitive Approaches"},
+  {term:"neuromyth", abbr:"", def:"A misconception generated by a misunderstanding or misreading of facts scientifically established by brain research, used to make a case for the use of brain research in education.", chapter:"Ch.8 · Age & CPH"},
+  {term:"computer-mediated communication", abbr:"CMC", def:"Communication through electronic devices, such as sending emails, using text messages, or video-based programs.", chapter:"Ch.6 · Teaching Methods"},
+];
+ 
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let mastered = new Set();
+let streak = 0;
+let currentFilter = 'All';
+let filteredTerms = [...TERMS];
+let fcIndex = 0;
+let fcFlipped = false;
+let quizScore = 0; let quizTotal = 0;
+let matchSelected = null; let matchScore = 0;
+let fitbIndex = 0; let fitbScore = 0; let fitbItems = [];
+let speedTimer = null; let speedTimeLeft = 30; let speedCorrect = 0; let speedWrong = 0; let speedCount = 0;
+let chatHistory = [];
+ 
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showMode(id) {
+  document.querySelectorAll('.mode').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + id).classList.add('active');
+  // find nav button
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(id)) b.classList.add('active'); });
+ 
+  if (id === 'flashcards') initFlashcards();
+  if (id === 'quiz') initQuiz();
+  if (id === 'matching') initMatching();
+  if (id === 'fitb') initFitb();
+  if (id === 'cmap') initCmap();
+  if (id === 'speed') resetSpeed();
+}
+ 
+function updateProgress() {
+  const pct = (mastered.size / TERMS.length * 100).toFixed(0);
+  document.getElementById('masterProgress').style.width = pct + '%';
+  document.getElementById('masteredCount').textContent = mastered.size + ' mastered';
+  if (streak >= 3) {
+    document.getElementById('streakBadge').classList.remove('hidden');
+    document.getElementById('streakNum').textContent = streak;
+  }
+}
+ 
+// ══════════════════════════════════════════════
+// FLASHCARDS
+// ══════════════════════════════════════════════
+function getChapters() {
+  const chapters = ['All', ...new Set(TERMS.map(t => t.chapter))];
+  return chapters;
+}
+ 
+function initFlashcards() {
+  // build filter buttons
+  const filterEl = document.getElementById('fc-chapter-filter');
+  if (filterEl.children.length === 0) {
+    getChapters().forEach(ch => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (ch === 'All' ? ' active' : '');
+      btn.textContent = ch;
+      btn.onclick = () => {
+        currentFilter = ch;
+        filterEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filteredTerms = ch === 'All' ? [...TERMS] : TERMS.filter(t => t.chapter === ch);
+        fcIndex = 0;
+        showCard();
+      };
+      filterEl.appendChild(btn);
+    });
+  }
+  filteredTerms = currentFilter === 'All' ? [...TERMS] : TERMS.filter(t => t.chapter === currentFilter);
+  fcIndex = 0;
+  showCard();
+}
+ 
+function showCard() {
+  const card = filteredTerms[fcIndex];
+  if (!card) return;
+  fcFlipped = false;
+  document.getElementById('flashcard-inner').classList.remove('flipped');
+  document.getElementById('fc-term-text').textContent = card.term;
+  document.getElementById('fc-abbr-text').textContent = card.abbr ? `(${card.abbr})` : '';
+  document.getElementById('fc-chapter-text').textContent = card.chapter;
+  document.getElementById('fc-def-text').textContent = card.def;
+  document.getElementById('fc-counter').textContent = `Card ${fcIndex + 1} of ${filteredTerms.length} · ${mastered.size} mastered`;
+}
+ 
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('flashcard-inner').classList.toggle('flipped', fcFlipped);
+}
+ 
+function nextCard() {
+  fcIndex = (fcIndex + 1) % filteredTerms.length;
+  showCard();
+}
+ 
+function prevCard() {
+  fcIndex = (fcIndex - 1 + filteredTerms.length) % filteredTerms.length;
+  showCard();
+}
+ 
+function markCard(known) {
+  const card = filteredTerms[fcIndex];
+  if (known) {
+    mastered.add(card.term);
+    streak++;
+  } else {
+    mastered.delete(card.term);
+    streak = 0;
+  }
+  updateProgress();
+  nextCard();
+}
+ 
+function shuffleCards() {
+  for (let i = filteredTerms.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filteredTerms[i], filteredTerms[j]] = [filteredTerms[j], filteredTerms[i]];
+  }
+  fcIndex = 0;
+  showCard();
+}
+ 
+// ══════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════
+let quizItems = [];
+let quizIdx = 0;
+let quizAnswered = false;
+ 
+function initQuiz() {
+  quizItems = shuffle([...TERMS]).slice(0, 20);
+  quizIdx = 0;
+  quizScore = 0;
+  quizTotal = 0;
+  quizAnswered = false;
+  document.getElementById('quiz-next-btn').classList.add('hidden');
+  showQuizQuestion();
+}
+ 
+function showQuizQuestion() {
+  if (quizIdx >= quizItems.length) {
+    showQuizResult();
+    return;
+  }
+  quizAnswered = false;
+  const q = quizItems[quizIdx];
+  document.getElementById('quiz-progress').textContent = `Question ${quizIdx + 1} of ${quizItems.length}`;
+  document.getElementById('quiz-score-display').textContent = `Score: ${quizScore}/${quizTotal}`;
+  document.getElementById('quiz-next-btn').classList.add('hidden');
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+ 
+  // randomly: show term, ask for def; or show def, ask for term
+  const termFirst = Math.random() > 0.5;
+  let questionText, correctAnswer, wrongPool;
+ 
+  if (termFirst) {
+    questionText = `What is the definition of:`;
+    document.getElementById('quiz-q-text').innerHTML = `<span style="color:var(--accent2);font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem">${q.term}${q.abbr ? ' (' + q.abbr + ')' : ''}</span><br><br>`;
+    correctAnswer = q.def;
+    wrongPool = TERMS.filter(t => t.term !== q.term).map(t => t.def);
+  } else {
+    document.getElementById('quiz-q-text').innerHTML = `<span style="color:var(--text-muted);font-size:0.9rem">Which term matches this definition?</span><br><br><span style="font-family:'Lora',serif;font-style:italic">${q.def}</span>`;
+    correctAnswer = q.term + (q.abbr ? ' (' + q.abbr + ')' : '');
+    wrongPool = TERMS.filter(t => t.term !== q.term).map(t => t.term + (t.abbr ? ' (' + t.abbr + ')' : ''));
+  }
+ 
+  const wrongs = shuffle(wrongPool).slice(0, 3);
+  const options = shuffle([correctAnswer, ...wrongs]);
+ 
+  const optsEl = document.getElementById('quiz-opts');
+  optsEl.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = opt;
+    btn.onclick = () => {
+      if (quizAnswered) return;
+      quizAnswered = true;
+      quizTotal++;
+      const correct = opt === correctAnswer;
+      if (correct) { quizScore++; streak++; } else { streak = 0; }
+      updateProgress();
+      btn.classList.add(correct ? 'correct' : 'wrong');
+      optsEl.querySelectorAll('.quiz-opt').forEach(b => {
+        if (b.textContent === correctAnswer) b.classList.add('correct');
+        b.disabled = true;
+      });
+      const fb = document.getElementById('quiz-feedback');
+      if (correct) {
+        fb.className = 'quiz-feedback show ok';
+        fb.textContent = '✓ Correct!';
+      } else {
+        fb.className = 'quiz-feedback show bad';
+        fb.textContent = `✗ The answer was: ${correctAnswer}`;
+      }
+      document.getElementById('quiz-score-display').textContent = `Score: ${quizScore}/${quizTotal}`;
+      document.getElementById('quiz-next-btn').classList.remove('hidden');
+    };
+    optsEl.appendChild(btn);
+  });
+}
+ 
+function nextQuizQuestion() {
+  quizIdx++;
+  showQuizQuestion();
+}
+ 
+function showQuizResult() {
+  const pct = Math.round(quizScore / quizTotal * 100);
+  document.getElementById('quiz-q-text').innerHTML = `<div style="text-align:center;padding:20px 0">
+    <div style="font-size:3rem;margin-bottom:12px">${pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '📚'}</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem">${quizScore}/${quizTotal}</div>
+    <div style="color:var(--text-muted);margin-top:8px">${pct}% — ${pct >= 80 ? 'Excellent work!' : pct >= 60 ? 'Good effort, keep reviewing!' : 'Keep studying!'}</div>
+  </div>`;
+  document.getElementById('quiz-opts').innerHTML = '';
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('quiz-next-btn').classList.add('hidden');
+}
+ 
+// ══════════════════════════════════════════════
+// MATCHING
+// ══════════════════════════════════════════════
+let matchPairs = [];
+let matchSelectedEl = null;
+let matchSelectedType = null;
+let matchSelectedTerm = null;
+let matchTotal = 0;
+ 
+function initMatching() {
+  matchPairs = shuffle([...TERMS]).slice(0, 8);
+  matchTotal = matchPairs.length;
+  matchScore = 0;
+  matchSelectedEl = null;
+  matchSelectedType = null;
+  matchSelectedTerm = null;
+  document.getElementById('match-score').textContent = matchScore;
+  document.getElementById('match-total').textContent = matchTotal;
+ 
+  const grid = document.getElementById('matching-grid');
+  const termsCol = document.createElement('div');
+  const defsCol = document.createElement('div');
+ 
+  const shuffledTerms = shuffle([...matchPairs]);
+  const shuffledDefs = shuffle([...matchPairs]);
+ 
+  shuffledTerms.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'match-item term';
+    el.textContent = p.term;
+    el.dataset.term = p.term;
+    el.dataset.type = 'term';
+    el.onclick = () => handleMatch(el, 'term', p.term);
+    termsCol.appendChild(el);
+  });
+ 
+  shuffledDefs.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'match-item def';
+    el.textContent = p.def.length > 100 ? p.def.slice(0, 97) + '...' : p.def;
+    el.dataset.term = p.term;
+    el.dataset.type = 'def';
+    el.onclick = () => handleMatch(el, 'def', p.term);
+    defsCol.appendChild(el);
+  });
+ 
+  grid.innerHTML = '';
+  grid.appendChild(termsCol);
+  grid.appendChild(defsCol);
+}
+ 
+function handleMatch(el, type, termKey) {
+  if (el.classList.contains('matched')) return;
+ 
+  if (!matchSelectedEl) {
+    matchSelectedEl = el;
+    matchSelectedType = type;
+    matchSelectedTerm = termKey;
+    el.classList.add('selected');
+    return;
+  }
+ 
+  if (matchSelectedEl === el) {
+    el.classList.remove('selected');
+    matchSelectedEl = null;
+    return;
+  }
+ 
+  if (matchSelectedType === type) {
+    matchSelectedEl.classList.remove('selected');
+    matchSelectedEl = el;
+    matchSelectedType = type;
+    matchSelectedTerm = termKey;
+    document.querySelectorAll('.match-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    return;
+  }
+ 
+  // Check match
+  if (matchSelectedTerm === termKey) {
+    matchSelectedEl.classList.remove('selected');
+    matchSelectedEl.classList.add('matched');
+    el.classList.add('matched');
+    matchScore++;
+    document.getElementById('match-score').textContent = matchScore;
+    mastered.add(termKey);
+    streak++;
+    updateProgress();
+    if (matchScore === matchTotal) {
+      setTimeout(() => {
+        document.getElementById('matching-grid').insertAdjacentHTML('beforebegin',
+          `<div style="text-align:center;padding:20px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--accent3)">🎉 All matched! Great job!</div>`);
+      }, 300);
+    }
+  } else {
+    el.classList.add('wrong');
+    matchSelectedEl.classList.add('wrong');
+    streak = 0;
+    setTimeout(() => {
+      el.classList.remove('wrong', 'selected');
+      matchSelectedEl.classList.remove('wrong', 'selected');
+    }, 600);
+  }
+ 
+  matchSelectedEl = null;
+  matchSelectedType = null;
+  matchSelectedTerm = null;
+}
+ 
+// ══════════════════════════════════════════════
+// FILL IN THE BLANK
+// ══════════════════════════════════════════════
+function initFitb() {
+  fitbItems = shuffle([...TERMS]).slice(0, 20);
+  fitbIndex = 0;
+  fitbScore = 0;
+  showFitb();
+}
+ 
+function showFitb() {
+  if (fitbIndex >= fitbItems.length) {
+    const pct = Math.round(fitbScore / fitbItems.length * 100);
+    document.getElementById('fitb-sentence').innerHTML = `<div style="text-align:center">
+      <div style="font-size:3rem;margin-bottom:12px">${pct >= 80 ? '🎉' : '📚'}</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2rem">${fitbScore}/${fitbItems.length}</div>
+    </div>`;
+    document.getElementById('fitb-input-wrap').style.display = 'none';
+    return;
+  }
+  const item = fitbItems[fitbIndex];
+  document.getElementById('fitb-progress').textContent = `${fitbIndex + 1} of ${fitbItems.length}`;
+  document.getElementById('fitb-score').textContent = `${fitbScore} correct`;
+  // Create sentence with blank
+  const sentence = `_____ : ${item.def}`;
+  document.getElementById('fitb-sentence').textContent = sentence;
+  const inp = document.getElementById('fitb-input');
+  inp.value = '';
+  inp.className = 'fitb-input';
+  inp.disabled = false;
+  inp.focus();
+  document.getElementById('fitb-hint').className = 'fitb-hint';
+  document.getElementById('fitb-next-btn').classList.add('hidden');
+  document.getElementById('fitb-input-wrap').style.display = 'flex';
+}
+ 
+function checkFitb() {
+  const inp = document.getElementById('fitb-input');
+  const item = fitbItems[fitbIndex];
+  const userAns = inp.value.trim().toLowerCase().replace(/[^a-z0-9 ]/g, '');
+  const correct = item.term.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+  const abbr = item.abbr.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+ 
+  const isCorrect = userAns === correct || (abbr && userAns === abbr) ||
+    correct.includes(userAns) && userAns.length > 4;
+ 
+  if (isCorrect) {
+    inp.classList.add('correct');
+    fitbScore++;
+    mastered.add(item.term);
+    streak++;
+    const hint = document.getElementById('fitb-hint');
+    hint.textContent = `✓ Correct! Full term: "${item.term}"`;
+    hint.className = 'fitb-hint show';
+    hint.style.color = 'var(--accent3)';
+  } else {
+    inp.classList.add('wrong');
+    inp.disabled = true;
+    streak = 0;
+    const hint = document.getElementById('fitb-hint');
+    hint.textContent = `✗ The answer was: "${item.term}"`;
+    hint.className = 'fitb-hint show';
+    hint.style.color = 'var(--accent)';
+  }
+  updateProgress();
+  document.getElementById('fitb-next-btn').classList.remove('hidden');
+  fitbIndex++;
+}
+ 
+function nextFitb() {
+  showFitb();
+}
+ 
+// ══════════════════════════════════════════════
+// CONCEPT MAP
+// ══════════════════════════════════════════════
+const CLUSTERS = {
+  'Krashen\'s Monitor Model': {
+    color: 'var(--accent)',
+    bg: 'rgba(255,107,107,0.08)',
+    terms: ['Monitor Model','Acquisition-Learning Hypothesis','Affective Filter Hypothesis','Comprehensible Input Hypothesis','Natural Order Hypothesis'],
+    desc: 'Krashen\'s five interlocking hypotheses about how L2 is acquired.'
+  },
+  'Teaching Methods': {
+    color: 'var(--accent4)',
+    bg: 'rgba(116,185,255,0.08)',
+    terms: ['Grammar Translation Method','Direct Method','Audiolingual Method','Communicative Language Teaching','Total Physical Response','Suggestopedia','task-based language teaching','Processing Instruction','postmethod perspective'],
+    desc: 'Historical and contemporary approaches to classroom L2 instruction.'
+  },
+  'Theoretical Frameworks': {
+    color: 'var(--accent2)',
+    bg: 'rgba(255,209,102,0.08)',
+    terms: ['behaviorism','nativism','interactionism','connectionism','emergentism','sociocultural theory','cognitive linguistics','complex adaptive system','Universal Grammar'],
+    desc: 'Major theoretical lenses for understanding language acquisition.'
+  },
+  'SLA Key Concepts': {
+    color: 'var(--accent3)',
+    bg: 'rgba(6,214,160,0.08)',
+    terms: ['interlanguage','fossilization','developmental sequences','input','intake','output','noticing','recasts','corrective feedback','uptake','scaffolding','zone of proximal development'],
+    desc: 'Core constructs used to describe and analyze the L2 learning process.'
+  },
+  'Bilingualism': {
+    color: 'var(--accent)',
+    bg: 'rgba(255,107,107,0.06)',
+    terms: ['additive bilingualism','subtractive bilingualism','bilingual first language acquisition','code-switching','mixed utterances','translanguaging','heritage language','executive control','bilingual lexical representation'],
+    desc: 'Concepts related to the acquisition and use of more than one language.'
+  },
+  'Individual Differences': {
+    color: 'var(--accent4)',
+    bg: 'rgba(116,185,255,0.06)',
+    terms: ['aptitude','motivation','extrinsic motivation','intrinsic motivation','integrative orientation','instrumental orientation','learning style','cognitive style','field dependence','field independence','working memory'],
+    desc: 'Factors that vary among learners and affect L2 success.'
+  },
+  'Critical Period': {
+    color: 'var(--accent2)',
+    bg: 'rgba(255,209,102,0.06)',
+    terms: ['critical period','Critical Period Hypothesis','sensitive period','lateralization','age of arrival / age of onset','feral child','length of residence'],
+    desc: 'Age-related factors and debates around optimal L2 acquisition windows.'
+  }
+};
+ 
+function initCmap() {
+  const controls = document.getElementById('cmap-controls');
+  controls.innerHTML = '';
+  Object.keys(CLUSTERS).forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'cluster-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = name;
+    btn.style.borderColor = CLUSTERS[name].color;
+    btn.onclick = () => {
+      controls.querySelectorAll('.cluster-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      btn.style.background = CLUSTERS[name].color;
+      btn.style.color = 'var(--bg)';
+      controls.querySelectorAll('.cluster-btn:not(.active)').forEach(b => {
+        b.style.background = '';
+        b.style.color = '';
+      });
+      renderCluster(name);
+    };
+    controls.appendChild(btn);
+  });
+  // Set first active
+  const first = controls.querySelector('.cluster-btn');
+  if (first) {
+    const name = Object.keys(CLUSTERS)[0];
+    first.style.background = CLUSTERS[name].color;
+    first.style.color = 'var(--bg)';
+  }
+  renderCluster(Object.keys(CLUSTERS)[0]);
+}
+ 
+function renderCluster(name) {
+  const cluster = CLUSTERS[name];
+  const canvas = document.getElementById('cmap-canvas');
+  canvas.style.borderColor = cluster.color + '44';
+ 
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let html = `<div class="cluster-title" style="color:${cluster.color}">${name}</div>`;
+  html += `<p style="color:var(--text-muted);font-size:0.82rem;margin-bottom:24px;font-family:'Lora',serif;font-style:italic">${cluster.desc}</p>`;
+ 
+  cluster.terms.forEach((termName, i) => {
+    const termObj = TERMS.find(t => t.term === termName);
+    if (!termObj) return;
+    const related = TERMS.filter(t =>
+      t.term !== termName &&
+      (t.def.toLowerCase().includes(termName.toLowerCase().split(' ')[0]) ||
+       termName.toLowerCase().includes(t.term.toLowerCase().split(' ')[0]))
+    ).slice(0, 3);
+ 
+    html += `<div class="concept-node">
+      <div class="node-bullet" style="background:${cluster.color}22;color:${cluster.color}">${letters[i]}</div>
+      <div class="node-content">
+        <div class="node-term">${termObj.term}${termObj.abbr ? ` <span style="color:var(--text-muted);font-weight:400;font-size:0.8rem">(${termObj.abbr})</span>` : ''}</div>
+        <div class="node-def">${termObj.def}</div>
+        ${related.length ? `<div class="node-related">${related.map(r => `<span class="related-tag" onclick="showRelated('${r.term}')">${r.term}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+  });
+ 
+  canvas.innerHTML = html;
+}
+ 
+function showRelated(termName) {
+  const termObj = TERMS.find(t => t.term === termName);
+  if (!termObj) return;
+  alert(`${termObj.term}\n\n${termObj.def}`);
+}
+ 
+// ══════════════════════════════════════════════
+// SPEED ROUND
+// ══════════════════════════════════════════════
+let speedItems = [];
+let speedIdx = 0;
+let speedTimerInterval = null;
+ 
+function resetSpeed() {
+  clearInterval(speedTimerInterval);
+  document.getElementById('speed-start-screen').classList.remove('hidden');
+  document.getElementById('speed-game-screen').classList.add('hidden');
+  document.getElementById('speed-result').classList.remove('show');
+}
+ 
+function startSpeed() {
+  speedItems = shuffle([...TERMS]);
+  speedIdx = 0;
+  speedCorrect = 0;
+  speedWrong = 0;
+  speedCount = 0;
+  document.getElementById('speed-start-screen').classList.add('hidden');
+  document.getElementById('speed-game-screen').classList.remove('hidden');
+  document.getElementById('speed-result').classList.remove('show');
+  document.getElementById('speed-correct').textContent = 0;
+  document.getElementById('speed-wrong').textContent = 0;
+  document.getElementById('speed-total').textContent = 0;
+  showSpeedQ();
+}
+ 
+function showSpeedQ() {
+  if (speedIdx >= speedItems.length) { endSpeed(); return; }
+  const q = speedItems[speedIdx];
+  speedTimeLeft = 30;
+  updateSpeedTimer();
+ 
+  clearInterval(speedTimerInterval);
+  speedTimerInterval = setInterval(() => {
+    speedTimeLeft--;
+    updateSpeedTimer();
+    if (speedTimeLeft <= 0) { clearInterval(speedTimerInterval); timeoutSpeed(); }
+  }, 1000);
+ 
+  const showDef = Math.random() > 0.5;
+  if (showDef) {
+    document.getElementById('speed-prompt').textContent = 'Which term matches this definition?';
+    document.getElementById('speed-term').textContent = q.def.length > 120 ? q.def.slice(0,117)+'...' : q.def;
+  } else {
+    document.getElementById('speed-prompt').textContent = 'What does this term mean?';
+    document.getElementById('speed-term').textContent = q.term + (q.abbr ? ` (${q.abbr})` : '');
+  }
+ 
+  const wrongs = shuffle(TERMS.filter(t => t.term !== q.term)).slice(0, 3);
+  const correctOpt = showDef ? q.term + (q.abbr ? ` (${q.abbr})` : '') : q.def;
+  const wrongOpts = wrongs.map(t => showDef ? t.term + (t.abbr ? ` (${t.abbr})` : '') : t.def);
+  const opts = shuffle([correctOpt, ...wrongOpts]);
+ 
+  const optsEl = document.getElementById('speed-opts');
+  optsEl.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'speed-opt';
+    btn.textContent = opt.length > 90 ? opt.slice(0,87)+'...' : opt;
+    btn.onclick = () => {
+      clearInterval(speedTimerInterval);
+      speedCount++;
+      const isCorrect = opt === correctOpt;
+      if (isCorrect) { speedCorrect++; mastered.add(q.term); streak++; btn.classList.add('correct'); }
+      else { speedWrong++; streak = 0; btn.classList.add('wrong'); optsEl.querySelectorAll('.speed-opt').forEach(b => { if (b.textContent === (correctOpt.length > 90 ? correctOpt.slice(0,87)+'...' : correctOpt)) b.classList.add('correct'); }); }
+      optsEl.querySelectorAll('.speed-opt').forEach(b => b.disabled = true);
+      updateProgress();
+      document.getElementById('speed-correct').textContent = speedCorrect;
+      document.getElementById('speed-wrong').textContent = speedWrong;
+      document.getElementById('speed-total').textContent = speedCount;
+      speedIdx++;
+      setTimeout(showSpeedQ, 800);
+    };
+    optsEl.appendChild(btn);
+  });
+}
+ 
+function updateSpeedTimer() {
+  const el = document.getElementById('speed-timer');
+  el.textContent = speedTimeLeft;
+  el.className = 'speed-timer' + (speedTimeLeft <= 10 ? ' danger' : '');
+  document.getElementById('speed-progress').style.width = (speedTimeLeft / 30 * 100) + '%';
+}
+ 
+function timeoutSpeed() {
+  speedWrong++;
+  speedCount++;
+  streak = 0;
+  document.getElementById('speed-wrong').textContent = speedWrong;
+  document.getElementById('speed-total').textContent = speedCount;
+  document.getElementById('speed-opts').querySelectorAll('.speed-opt').forEach(b => b.disabled = true);
+  speedIdx++;
+  setTimeout(showSpeedQ, 600);
+}
+ 
+function endSpeed() {
+  clearInterval(speedTimerInterval);
+  document.getElementById('speed-game-screen').classList.add('hidden');
+  const result = document.getElementById('speed-result');
+  result.classList.add('show');
+  const pct = speedCount > 0 ? Math.round(speedCorrect / speedCount * 100) : 0;
+  document.getElementById('speed-emoji').textContent = pct >= 80 ? '🏆' : pct >= 60 ? '🎯' : '📚';
+  document.getElementById('speed-result-score').textContent = `${speedCorrect} / ${speedCount}`;
+  document.getElementById('speed-result-msg').textContent = `${pct}% accuracy — ${pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Keep it up!' : 'More practice needed!'}`;
+}
+ 
+// ══════════════════════════════════════════════
+// AI TUTOR
+// ══════════════════════════════════════════════
+const SYSTEM_PROMPT = `You are an expert SLA (Second Language Acquisition) tutor helping a student prepare for their linguistics final exam. The course is based on "Introducing Second Language Acquisition" by Kirsten M. Hummel (2nd ed., Wiley 2021).
+ 
+Key topics covered:
+- Ch 2: FLA foundations, behaviorism, nativism, interactionism, connectionism, emergentism, morphemes, babbling stages
+- Ch 3: Bilingualism (additive/subtractive), immersion, heritage language, dual-language education  
+- Ch 4: Krashen's Monitor Model (5 hypotheses), Contrastive Analysis Hypothesis, Error Analysis, Interlanguage, Sociocultural Theory (Vygotsky), ZPD, Universal Grammar
+- Ch 5: Information-processing approach, automatic vs. controlled processing, Noticing Hypothesis (Schmidt), Comprehensible Output Hypothesis (Swain), Interaction Hypothesis (Long), Input Processing (VanPatten), declarative/procedural knowledge
+- Ch 6: Teaching methods: Grammar Translation, Direct Method, Audiolingual (ALM), CLT, TPR, Suggestopedia, TBLT, FFI, Processing Instruction, postmethod perspective
+- Ch 7: L2 development, fossilization, developmental sequences, pragmatics, Multidimensional Model, Processability Theory, Speech Learning Model, Teachability Hypothesis
+- Ch 8: Critical Period Hypothesis (Lenneberg), sensitive period, lateralization, age of arrival, feral children
+- Ch 9: Individual differences: aptitude (MLAT), motivation (Gardner's AMTB), integrative vs. instrumental orientation, BICS vs. CALP, cognitive/learning styles, working memory
+- Ch 10: Bilingual cognition: BFLA, lexical representation, code-switching, Stroop experiment, semantic priming, executive control
+ 
+Be concise, clear, and educational. Use examples. When relevant, make connections between concepts. Help the student truly understand — not just memorize. Keep answers focused (2-4 paragraphs max unless asked for more detail).`;
+ 
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+ 
+  addMsg('user', msg);
+  input.value = '';
+  chatHistory.push({ role: 'user', content: msg });
+ 
+  const sendBtn = document.getElementById('chat-send');
+  sendBtn.disabled = true;
+ 
+  // Typing indicator
+  const typingId = 'typing-' + Date.now();
+  const typingEl = document.createElement('div');
+  typingEl.className = 'msg ai';
+  typingEl.id = typingId;
+  typingEl.innerHTML = `<div class="msg-avatar">AI</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  document.getElementById('chat-msgs').appendChild(typingEl);
+  scrollChat();
+ 
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c => c.text || '').join('') || 'Sorry, I had trouble responding.';
+    chatHistory.push({ role: 'assistant', content: reply });
+ 
+    document.getElementById(typingId)?.remove();
+    addMsg('ai', reply);
+  } catch (e) {
+    document.getElementById(typingId)?.remove();
+    addMsg('ai', 'Connection error. Please try again.');
+  }
+  sendBtn.disabled = false;
+}
+ 
+function addMsg(role, text) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-avatar">${role === 'ai' ? 'AI' : 'U'}</div><div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>`;
+  msgs.appendChild(div);
+  scrollChat();
+}
+ 
+function scrollChat() {
+  const msgs = document.getElementById('chat-msgs');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+ 
+function sendSuggestion(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendChat();
+}
+ 
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+ 
+// Init
+initFlashcards();
+</script>
+</body>
+</html>
+ 
